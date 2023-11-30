@@ -2,17 +2,27 @@ package org.example;
 
 import java.util.Scanner;
 
-public class WumpusWorld{
+public class WumpusWorld {
 
-    private static final int SIZE = 4;
-    private static char[][] world = new char[SIZE][SIZE];
-    private static int agentX, agentY;
+    private static int size;
+    private static char[][] world;
+    private static int heroX, heroY;
+    private static int spawnX, spawnY;
+    private static int goldX, goldY;
+    private static boolean hasGold = false;
+    private static String name;
 
-    public WumpusWorld(int size) {
+    public WumpusWorld() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("What is your name?");
+        name = scanner.nextLine();
+
+        System.out.println("Please set the map's size (N x N, excluding walls): ");
+        size = scanner.nextInt();
+
         initializeWorld();
         printWorld();
-
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.println("Enter your move (W/A/S/D to move, Q to quit): ");
@@ -29,32 +39,54 @@ public class WumpusWorld{
     }
 
     private static void initializeWorld() {
-        // Initialize the world with empty cells
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                world[i][j] = ' ';
+        // A pálya mérete a falak közötti területtel
+        int worldSize = size + 2;
+        world = new char[worldSize][worldSize];
+
+        // Initialize the world with walls and empty cells
+        for (int i = 0; i < worldSize; i++) {
+            for (int j = 0; j < worldSize; j++) {
+                if (i == 0 || i == worldSize - 1 || j == 0 || j == worldSize - 1) {
+                    world[i][j] = 'W'; // Walls
+                } else {
+                    world[i][j] = ' ';
+                }
             }
         }
 
-        // Place the agent in a random position
-        agentX = (int) (Math.random() * SIZE);
-        agentY = (int) (Math.random() * SIZE);
-        world[agentX][agentY] = 'A';
+        // Place the hero in an empty random position
+        do {
+            heroX = (int) (Math.random() * (size)) + 1;
+            heroY = (int) (Math.random() * (size)) + 1;
+        } while (world[heroX][heroY] == 'W');
 
-        // Place the Wumpus in a random position
+        world[heroX][heroY] = 'H';
+        spawnX = heroX;
+        spawnY = heroY;
+
+        // Place the Wumpus in an empty random position
         int wumpusX, wumpusY;
         do {
-            wumpusX = (int) (Math.random() * SIZE);
-            wumpusY = (int) (Math.random() * SIZE);
-        } while (wumpusX == agentX && wumpusY == agentY);
+            wumpusX = (int) (Math.random() * (size)) + 1;
+            wumpusY = (int) (Math.random() * (size)) + 1;
+        } while (world[wumpusX][wumpusY] == 'W' || (wumpusX == heroX && wumpusY == heroY));
 
         world[wumpusX][wumpusY] = 'W';
+
+        // Place the gold in an empty random position
+        int goldX, goldY;
+        do {
+            goldX = (int) (Math.random() * (size)) + 1;
+            goldY = (int) (Math.random() * (size)) + 1;
+        } while (world[goldX][goldY] == 'W' || (goldX == heroX && goldY == heroY));
+
+        world[goldX][goldY] = 'G';
     }
 
     private static void printWorld() {
         // Print the current state of the world
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+        for (int i = 0; i < world.length; i++) {
+            for (int j = 0; j < world.length; j++) {
                 System.out.print(world[i][j] + " ");
             }
             System.out.println();
@@ -63,43 +95,58 @@ public class WumpusWorld{
     }
 
     private static void performMove(char move) {
-        // Move the agent based on user input
-        world[agentX][agentY] = ' '; // Clear the current position
+        // Move the hero based on user input
+        world[heroX][heroY] = ' '; // Clear the current position
 
         switch (move) {
             case 'W':
             case 'w':
-                if (agentX > 0) {
-                    agentX--;
+                if (heroX > 1 && world[heroX - 1][heroY] != 'W') {
+                    heroX--;
                 }
                 break;
             case 'A':
             case 'a':
-                if (agentY > 0) {
-                    agentY--;
+                if (heroY > 1 && world[heroX][heroY - 1] != 'W') {
+                    heroY--;
                 }
                 break;
             case 'S':
             case 's':
-                if (agentX < SIZE - 1) {
-                    agentX++;
+                if (heroX < world.length - 2 && world[heroX + 1][heroY] != 'W') {
+                    heroX++;
                 }
                 break;
             case 'D':
             case 'd':
-                if (agentY < SIZE - 1) {
-                    agentY++;
+                if (heroY < world.length - 2 && world[heroX][heroY + 1] != 'W') {
+                    heroY++;
                 }
                 break;
         }
 
         // Check for collisions
-        if (world[agentX][agentY] == 'W') {
+        if (world[heroX][heroY] == 'W') {
             System.out.println("Game over! The Wumpus got you!");
             System.exit(0);
+        } else if (world[heroX][heroY] == 'G') {
+            System.out.println("Congratulations, " + name + "! You found the gold!");
+
+            // Mark that the hero has the gold
+            hasGold = true;
         }
 
-        // Update the agent's position
-        world[agentX][agentY] = 'A';
+        // Update the hero's position
+        world[heroX][heroY] = 'H';
+
+        // Check if the hero is back to the starting position with the gold
+        if (hasGold && heroX == spawnX && heroY == spawnY) {
+            System.out.println("You win, " + name + "! You brought the gold back to the starting position!");
+            System.exit(0);
+        }
+    }
+
+    public static void main(String[] args) {
+        new WumpusWorld();
     }
 }
