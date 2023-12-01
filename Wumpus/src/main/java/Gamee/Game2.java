@@ -36,29 +36,42 @@ public class Game2 {
 
     public void play() {
         Scanner scanner = new Scanner(System.in);
-        while (true) {
-            world.printWorld();
+        boolean gameOver = false;
+
+        while (!gameOver) {
+            world.printWorld(); // Print the map once
+
             System.out.println("Enter your move (W to move, Q to quit, R/L to turn, E to shoot arrow): ");
             char move = scanner.next().charAt(0);
-            if (move == 'Q' || move == 'q') {
-                System.out.println("Game over. Thanks for playing!");
-                break;
-            } else if (move == 'R' || move == 'r') {
-                // Jobbra forgás esetén változtassa meg az irányt
-                player.turnRight();
-                world.printWorld(); // Pálya kiírása irányváltoztatás után
-            } else if (move == 'L' || move == 'l') {
-                // Balra forgás esetén változtassa meg az irányt
-                player.turnLeft();
-                world.printWorld(); // Pálya kiírása irányváltoztatás után
-            } else if (move == 'E' || move == 'e') {
-                // Nyíl kilövése az aktuális irányba
-                player.shootArrow();
-                world.printWorld(); // Pálya kiírása lövés után
-            } else {
-                player.performMove(move);
-                world.printWorld();
+
+            switch (move) {
+                case 'Q':
+                case 'q':
+                    System.out.println("Game over. Thanks for playing!");
+                    gameOver = true;
+                    break;
+                case 'R':
+                case 'r':
+                    player.turnRight();
+                    break;
+                case 'L':
+                case 'l':
+                    player.turnLeft();
+                    break;
+                case 'E':
+                case 'e':
+                    player.shootArrow();
+                    break;
+                case 'W':
+                case 'w':
+                    player.performMove(move);
+                    break;
+                default:
+                    System.out.println("Invalid move. Try again.");
             }
+
+            // Check for game over conditions here if needed
         }
     }
+
 }

@@ -30,15 +30,8 @@ class World2 {
             }
         }
 
-        // Place the hero in an empty random position
-        do {
-            Player2.setHeroY((int) (Math.random() * (size)) + 1);
-            Player2.setHeroX((int) (Math.random() * (size)) + 1);
-        } while (world[Player2.getHeroY()][Player2.getHeroX()] == 'W');
-
-        world[Player2.getHeroY()][Player2.getHeroX()] = 'H';
-        Player2.setSpawnX(Player2.getHeroY());
-        Player2.setSpawnY(Player2.getHeroX());
+        player.initializeHeroPosition();
+        world[player.getHeroY()][player.getHeroX()] = 'H';
 
         // Place the Wumpusokat a megadott számban véletlenszerű pozíciókra
         for (int k = 0; k < numWumpus; k++) {
@@ -47,7 +40,7 @@ class World2 {
             do {
                 wumpusX = (int) (Math.random() * (size)) + 1;
                 wumpusY = (int) (Math.random() * (size)) + 1;
-            } while (world[wumpusX][wumpusY] == 'W' || (wumpusX == Player2.getHeroY() && wumpusY == Player2.getHeroX()));
+            } while (world[wumpusX][wumpusY] == 'W' || (wumpusX == player.getHeroY() && wumpusY == player.getHeroX()));
 
             world[wumpusX][wumpusY] = 'U'; // Wumpus 'U'-val jelölve
         }
@@ -56,7 +49,7 @@ class World2 {
         do {
             goldX = (int) (Math.random() * (size)) + 1;
             goldY = (int) (Math.random() * (size)) + 1;
-        } while (world[goldX][goldY] == 'W' || (goldX == Player2.getHeroY() && goldY == Player2.getHeroX()));
+        } while (world[goldX][goldY] == 'W' || (goldX == player.getHeroY() && goldY == player.getHeroX()));
 
         world[goldX][goldY] = 'G';
 

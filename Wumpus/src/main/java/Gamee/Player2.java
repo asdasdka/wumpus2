@@ -3,8 +3,8 @@ package Gamee;
 public class Player2 {
     private String name;
     private char[][] world;
-    private static int heroY;
-    private static int heroX;
+    private int heroY;
+    private int heroX;
     private static int spawnX;
     private static int spawnY;
     private static char direction;
@@ -15,6 +15,19 @@ public class Player2 {
         this.name = name;
         this.world = world.getWorld();
         this.direction = 'E'; // Kezdetben keleti irány
+        initializeHeroPosition();
+    }
+
+    public void initializeHeroPosition() {
+        // Kezdeti pozíció beállítása random helyre a pályán
+        do {
+            heroY = (int) (Math.random() * (World2.getSize())) + 1;
+            heroX = (int) (Math.random() * (World2.getSize())) + 1;
+        } while (world[heroY][heroX] == 'W');
+
+        spawnX = heroY;
+        spawnY = heroX;
+        world[heroY][heroX] = 'H';
     }
 
     public void performMove(char move) {
@@ -24,29 +37,40 @@ public class Player2 {
         int prevHeroX = heroY;
         int prevHeroY = heroX;
 
-        // Mozgás az aktuális irányba
+        Player2 player = this;
+
         switch (move) {
+            case 'Q':
+            case 'q':
+                System.out.println("Game over. Thanks for playing!");
+                System.exit(0);
+                break;
+            case 'R':
+            case 'r':
+                player.turnRight();
+                break;
+            case 'L':
+            case 'l':
+                player.turnLeft();
+                break;
+            case 'E':
+            case 'e':
+                player.shootArrow();
+                break;
             case 'W':
             case 'w':
-                System.out.println(123);
-                moveForward();
+                player.moveForward();
                 break;
-            case 'A':
-            case 'a':
-                turnLeft();
-                System.out.println(321);
-                break;
-            case 'S':
-            case 's':
-                turnAround();
-                break;
-            case 'D':
-            case 'd':
-                turnRight();
-                break;
+            default:
+                System.out.println("Invalid move. Try again.");
         }
 
-        // Check for collisions
+        // Check for game over conditions here if needed
+
+
+
+
+    // Check for collisions
         if (world[heroY][heroX] == 'U') {
             System.out.println("Game over! The Wumpus got you!");
             System.exit(0);
@@ -86,38 +110,58 @@ public class Player2 {
     }
 
 
+
     private void moveForward() {
-        // Mozgás az aktuális irányba
+        // Clear the current position
+        world[heroY][heroX] = ' ';
+
+        // Calculate the new position based on the current direction
+        int newHeroY = heroY;
+        int newHeroX = heroX;
+
         switch (direction) {
             case 'N':
-                if (heroY > 1 && world[heroY - 1][heroX] != 'W') {
-                    heroY--;
-                    System.out.println(1);
-                }
+                newHeroY--;
                 break;
             case 'E':
-                if (heroX < World2.getSize() && world[heroY][heroX + 1] != 'W') {
-                    heroX++;
-                    System.out.println(2);
-                }
+                newHeroX++;
                 break;
             case 'S':
-                if (heroY < World2.getSize() && world[heroY + 1][heroX] != 'W') {
-                    heroY++;
-                    System.out.println(3);
-                }
+                newHeroY++;
                 break;
             case 'W':
-                if (heroX > 1 && world[heroY][heroX - 1] != 'W') {
-                    heroX--;
-                    System.out.println(4);
-                }
+                newHeroX--;
                 break;
             default:
-                System.out.println(5);
                 break;
         }
+
+        // Check if the new position is within the boundaries
+        if (newHeroY >= 0 && newHeroY < World2.getSize() && newHeroX >= 0 && newHeroX < World2.getSize()) {
+            // Check if the new position is not a wall
+            if (world[newHeroY][newHeroX] != 'W') {
+                // Update the hero's position
+                heroY = newHeroY;
+                heroX = newHeroX;
+            } else {
+                System.out.println("Cannot move into a wall.");
+            }
+        } else {
+            System.out.println("Cannot move outside the boundaries.");
+        }
+
+        // Update the world with the new hero position
+        world[heroY][heroX] = 'H';
     }
+
+
+
+
+
+
+
+
+
 
     public void turnLeft() {
         // Balra forgás esetén változtassa meg az irányt
@@ -223,11 +267,11 @@ public class Player2 {
         return world;
     }
 
-    public static int getHeroY() {
+    public int getHeroY() {
         return heroY;
     }
 
-    public static int getHeroX() {
+    public int getHeroX() {
         return heroX;
     }
 
@@ -251,12 +295,12 @@ public class Player2 {
         this.world = world;
     }
 
-    public static void setHeroY(int heroY) {
-        Player2.heroY = heroY;
+    public void setHeroY(int heroY) {
+        this.heroY = heroY;
     }
 
-    public static void setHeroX(int heroX) {
-        Player2.heroX = heroX;
+    public void setHeroX(int heroX) {
+        this.heroX = heroX;
     }
 
     public void setDirection(char direction) {

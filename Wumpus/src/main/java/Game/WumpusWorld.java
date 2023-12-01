@@ -162,6 +162,14 @@ public class WumpusWorld {
             case 'd':
                 turnRight();
                 break;
+            case 'Q':
+            case 'q':
+                System.out.println("Game over. Thanks for playing!");
+                Main.database.adatbazisbaMent(name, arrows); // Mentés az adatbázisba
+                System.exit(0);
+            default:
+                performMove(move);
+                printWorld();
         }
 
         // Check for collisions
