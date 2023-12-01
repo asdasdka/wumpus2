@@ -1,4 +1,4 @@
-package org.example;
+package Game;
 
 import java.util.Scanner;
 
@@ -6,29 +6,30 @@ public class WumpusWorld {
 
     private static int size;
     private static char[][] world;
-    private static int heroX, heroY;
-    private static int spawnX, spawnY;
-    private static int goldX, goldY;
-
-    private static int pitX, pitY;
+    private static int heroX;
+    private static int heroY;
+    private static int spawnX;
+    private static int spawnY;
+    private static int goldX;
+    private static int goldY;
+    private static int pitX;
+    private static int pitY;
     private static int numWumpus;
     private static int arrows;
     private static char direction = 'E'; // Kezdetben keleti irány
     private static boolean hasGold = false;
     private static String name;
 
+
     public WumpusWorld() {
         Scanner scanner = new Scanner(System.in);
-
         System.out.println("What is your name?");
         name = scanner.nextLine();
-
         // Kérje be a pálya méretét 6 és 20 között
         do {
             System.out.println("Please set the map's size (N x N, excluding walls, between 6 and 20): ");
             size = scanner.nextInt();
         } while (size < 6 || size > 20);
-
         // Állítsa be a Wumpusok számát a pálya mérete alapján
         if (size <= 8) {
             numWumpus = 1;
@@ -37,17 +38,13 @@ public class WumpusWorld {
         } else {
             numWumpus = 3;
         }
-
         // Állítsa be a nyilak számát a Wumpusok számával
         arrows = numWumpus;
-
         initializeWorld();
         printWorld();
-
         while (true) {
             System.out.println("Enter your move (W to move, Q to quit, R/L to turn, E to shoot arrow): ");
             char move = scanner.next().charAt(0);
-
             if (move == 'Q' || move == 'q') {
                 System.out.println("Game over. Thanks for playing!");
                 break;
@@ -98,7 +95,8 @@ public class WumpusWorld {
 
         // Place the Wumpusokat a megadott számban véletlenszerű pozíciókra
         for (int k = 0; k < numWumpus; k++) {
-            int wumpusX, wumpusY;
+            int wumpusX;
+            int wumpusY;
             do {
                 wumpusX = (int) (Math.random() * (size)) + 1;
                 wumpusY = (int) (Math.random() * (size)) + 1;
@@ -187,6 +185,12 @@ public class WumpusWorld {
 
             // Respawn the pit at the hero's previous position
             world[prevHeroX][prevHeroY] = 'P';
+
+            // Check if the hero is out of arrows after falling into a pit
+            if (arrows <= 0) {
+                System.out.println("Out of arrows! Game over.");
+                System.exit(0);
+            }
         }
 
         // Update the hero's position
@@ -198,6 +202,7 @@ public class WumpusWorld {
             System.exit(0);
         }
     }
+
 
     private static void moveForward() {
         // Mozgás az aktuális irányba
@@ -222,6 +227,8 @@ public class WumpusWorld {
                     heroY--;
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -239,6 +246,8 @@ public class WumpusWorld {
                 break;
             case 'W':
                 direction = 'S';
+                break;
+            default:
                 break;
         }
         System.out.println("Direction: " + direction);
@@ -258,6 +267,8 @@ public class WumpusWorld {
                 break;
             case 'W':
                 direction = 'N';
+                break;
+            default:
                 break;
         }
         System.out.println("Direction: " + direction);
@@ -294,6 +305,8 @@ public class WumpusWorld {
                     case 'W':
                         arrowY--;
                         break;
+                    default:
+                        break;
                 }
 
                 // Ha a nyíl eléri a pálya szélét, akkor eltűnik
@@ -302,7 +315,8 @@ public class WumpusWorld {
                     break;
                 }
 
-                // Ha a nyíl eltalál egy Wumpust, akkor a Wumpus helyén megjelenik egy 'X'
+                // Ha a nyíl eltalál egy Wumpust, akkor
+                // a Wumpus helyén megjelenik egy 'X'
                 if (world[arrowX][arrowY] == 'U') {
                     System.out.println("Arrow hit the Wumpus! Wumpus eliminated!");
                     world[arrowX][arrowY] = 'X';
@@ -310,12 +324,7 @@ public class WumpusWorld {
                 }
             }
         } else {
-            System.out.println("Out of arrows! Game over.");
-            System.exit(0);
+            System.out.println("Out of arrows! You can no longer shoot.");
         }
-    }
-
-    public static void main(String[] args) {
-        new WumpusWorld();
     }
 }
