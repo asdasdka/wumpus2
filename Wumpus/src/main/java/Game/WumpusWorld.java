@@ -1,8 +1,7 @@
 package Game;
 
-import database.AdatbazisKezelo;
+import database.Database;
 
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
@@ -25,6 +24,7 @@ public class WumpusWorld {
     private static char direction = 'E'; // Kezdetben keleti irány
     private static boolean hasGold = false;
     private static String name;
+    private Database database;
 
 
     public WumpusWorld(Scanner scanner, PrintStream printStream) {
@@ -72,6 +72,7 @@ public class WumpusWorld {
                 printWorld();
             }
         }
+        this.database = new Database();
     }
 
     private static void initializeWorld() {
@@ -214,6 +215,7 @@ public class WumpusWorld {
         // Check if the hero is back to the starting position with the gold
         if (hasGold && heroX == spawnX && heroY == spawnY) {
             System.out.println("You win, " + name + "! You brought the gold back to the starting position!");
+            database.insertScore(name);
             System.exit(0);
         }
     }
