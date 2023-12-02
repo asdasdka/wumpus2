@@ -46,8 +46,6 @@ public class WumpusWorldTest {
         assertNotNull(wumpusWorld);
     }
 
-    // ... Existing tests ...
-
     @Test
     public void testShootArrow() {
         // Test shooting arrows in different scenarios
