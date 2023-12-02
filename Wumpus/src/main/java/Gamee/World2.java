@@ -1,4 +1,4 @@
-package Gamee;
+/*package Gamee;
 
 class World2 {
     private static int size;
@@ -136,4 +136,4 @@ class World2 {
     public static void setNumWumpus(int numWumpus) {
         World2.numWumpus = numWumpus;
     }
-}
+}*/

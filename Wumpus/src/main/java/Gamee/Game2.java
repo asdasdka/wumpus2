@@ -1,4 +1,4 @@
-package Gamee;
+/*package Gamee;
 
 import javax.swing.plaf.basic.BasicDesktopIconUI;
 import java.util.Scanner;
@@ -74,4 +74,4 @@ public class Game2 {
         }
     }
 
-}
+}*/

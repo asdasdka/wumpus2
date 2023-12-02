@@ -1,9 +1,15 @@
 package Game;
 
+import database.AdatbazisKezelo;
+
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 public class WumpusWorld {
 
+    private final Scanner scanner;
+    private final PrintStream printStream;
     private static int size;
     private static char[][] world;
     private static int heroX;
@@ -21,8 +27,9 @@ public class WumpusWorld {
     private static String name;
 
 
-    public WumpusWorld() {
-        Scanner scanner = new Scanner(System.in);
+    public WumpusWorld(Scanner scanner, PrintStream printStream) {
+        this.scanner = scanner;
+        this.printStream = printStream;
         System.out.println("What is your name?");
         name = scanner.nextLine();
         // Kérje be a pálya méretét 6 és 20 között
@@ -43,8 +50,8 @@ public class WumpusWorld {
         initializeWorld();
         printWorld();
         while (true) {
-            System.out.println("Enter your move (W to move, Q to quit, R/L to turn, E to shoot arrow): ");
-            char move = scanner.next().charAt(0);
+            this.printStream.println("Enter your move (W to move, Q to quit, R/L to turn, E to shoot arrow): ");
+            char move = this.scanner.next().charAt(0);
             if (move == 'Q' || move == 'q') {
                 System.out.println("Game over. Thanks for playing!");
                 break;
@@ -124,7 +131,7 @@ public class WumpusWorld {
         }
     }
 
-    private static void printWorld() {
+    private void printWorld() {
         // Print the current state of the world
         for (int i = 0; i < world.length; i++) {
             for (int j = 0; j < world.length; j++) {
@@ -132,12 +139,12 @@ public class WumpusWorld {
             }
             System.out.println();
         }
-        System.out.println("Direction: " + direction); // Kiírja az aktuális irányt
-        System.out.println("Arrows: " + arrows); // Kiírja a nyilak számát
-        System.out.println();
+        this.printStream.println("Direction: " + direction);
+        this.printStream.println("Arrows: " + arrows);
+        this.printStream.println();
     }
 
-    private static void performMove(char move) {
+    public void performMove(char move) {
         // Move the hero based on user input
         world[heroX][heroY] = ' '; // Clear the current position
 
@@ -165,7 +172,7 @@ public class WumpusWorld {
             case 'Q':
             case 'q':
                 System.out.println("Game over. Thanks for playing!");
-                Main.database.adatbazisbaMent(name, arrows); // Mentés az adatbázisba
+                AdatbazisKezelo.adatbazisbaMent(name, arrows); // Mentés az adatbázisba
                 System.exit(0);
             default:
                 performMove(move);
@@ -212,7 +219,7 @@ public class WumpusWorld {
     }
 
 
-    private static void moveForward() {
+    public static void moveForward() {
         // Mozgás az aktuális irányba
         switch (direction) {
             case 'N':
@@ -240,7 +247,7 @@ public class WumpusWorld {
         }
     }
 
-    private static void turnLeft() {
+    public static void turnLeft() {
         // Balra forgás esetén változtassa meg az irányt
         switch (direction) {
             case 'N':
@@ -261,7 +268,7 @@ public class WumpusWorld {
         System.out.println("Direction: " + direction);
     }
 
-    private static void turnRight() {
+    public static void turnRight() {
         // Jobbra forgás esetén változtassa meg az irányt
         switch (direction) {
             case 'N':
@@ -282,13 +289,13 @@ public class WumpusWorld {
         System.out.println("Direction: " + direction);
     }
 
-    private static void turnAround() {
+    public static void turnAround() {
         // Fordulás 180 fokkal (két lépés balra)
         turnLeft();
         turnLeft();
     }
 
-    private static void shootArrow() {
+    public static void shootArrow() {
         // Lövés esetén csökkentse a nyilak számát
         if (arrows > 0) {
             arrows--;
@@ -298,6 +305,8 @@ public class WumpusWorld {
             // Ellenőrizze, hogy a Wumpus eltalálta-e a lövés
             int arrowX = heroX;
             int arrowY = heroY;
+
+            boolean wumpusHit = false;
 
             while (true) {
                 switch (direction) {
@@ -327,12 +336,138 @@ public class WumpusWorld {
                 // a Wumpus helyén megjelenik egy 'X'
                 if (world[arrowX][arrowY] == 'U') {
                     System.out.println("Arrow hit the Wumpus! Wumpus eliminated!");
-                    world[arrowX][arrowY] = 'X';
+                    world[arrowX][arrowY] = ' ';  // Clear the Wumpus from the cell
+                    wumpusHit = true;
                     break;
                 }
+            }
+
+            // Ha nem talált a nyíl Wumpust, akkor a célmezőn az arrowX és arrowY pozíció
+            if (!wumpusHit) {
+                System.out.println("Arrow missed and disappeared at (" + arrowX + ", " + arrowY + ")");
             }
         } else {
             System.out.println("Out of arrows! You can no longer shoot.");
         }
+    }
+
+    public static int getSize() {
+        return size;
+    }
+
+    public static void setSize(int size) {
+        WumpusWorld.size = size;
+    }
+
+    public static char[][] getWorld() {
+        return world;
+    }
+
+    public static void setWorld(char[][] world) {
+        WumpusWorld.world = world;
+    }
+
+    public static int getHeroX() {
+        return heroX;
+    }
+
+    public static void setHeroX(int heroX) {
+        WumpusWorld.heroX = heroX;
+    }
+
+    public static int getHeroY() {
+        return heroY;
+    }
+
+    public static void setHeroY(int heroY) {
+        WumpusWorld.heroY = heroY;
+    }
+
+    public static int getSpawnX() {
+        return spawnX;
+    }
+
+    public static void setSpawnX(int spawnX) {
+        WumpusWorld.spawnX = spawnX;
+    }
+
+    public static int getSpawnY() {
+        return spawnY;
+    }
+
+    public static void setSpawnY(int spawnY) {
+        WumpusWorld.spawnY = spawnY;
+    }
+
+    public static int getGoldX() {
+        return goldX;
+    }
+
+    public static void setGoldX(int goldX) {
+        WumpusWorld.goldX = goldX;
+    }
+
+    public static int getGoldY() {
+        return goldY;
+    }
+
+    public static void setGoldY(int goldY) {
+        WumpusWorld.goldY = goldY;
+    }
+
+    public static int getPitX() {
+        return pitX;
+    }
+
+    public static void setPitX(int pitX) {
+        WumpusWorld.pitX = pitX;
+    }
+
+    public static int getPitY() {
+        return pitY;
+    }
+
+    public static void setPitY(int pitY) {
+        WumpusWorld.pitY = pitY;
+    }
+
+    public static int getNumWumpus() {
+        return numWumpus;
+    }
+
+    public static void setNumWumpus(int numWumpus) {
+        WumpusWorld.numWumpus = numWumpus;
+    }
+
+    public static int getArrows() {
+        return arrows;
+    }
+
+    public static void setArrows(int arrows) {
+        WumpusWorld.arrows = arrows;
+    }
+
+    public static char getDirection() {
+        return direction;
+    }
+
+    public static void setDirection(char direction) {
+        WumpusWorld.direction = direction;
+    }
+
+    public static boolean isHasGold() {
+        return hasGold;
+    }
+
+    public static void setHasGold(boolean hasGold) {
+        WumpusWorld.hasGold = hasGold;
+    }
+
+    public static String getName() {
+        return name;
+    }
+
+    public static void setName(String name) {
+        WumpusWorld.name = name;
     }
 }

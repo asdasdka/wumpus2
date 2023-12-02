@@ -1,4 +1,4 @@
-package Gamee;
+/*package Gamee;
 
 public class Player2 {
     private String name;
@@ -330,4 +330,4 @@ public class Player2 {
     public static void setSpawnY(int spawnY) {
         Player2.spawnY = spawnY;
     }
-}
+}*/

@@ -41,6 +41,6 @@ public class Main {
 
     private static void startGame() {
         System.out.println("Starting Wumpus World Game...");
-        new WumpusWorld();
+        WumpusWorld wumpusWorld = new WumpusWorld(new Scanner(System.in), System.out);
     }
 }
